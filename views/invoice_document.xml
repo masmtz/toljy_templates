@@ -1,0 +1,388 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <report 
+        id="action_report_invoice_toljy"
+        string="CFDI"
+        model="account.move"
+        report_type="qweb-pdf"
+        file="toljy_templates.report_invoice_toljy"
+        name="toljy_templates.report_invoice_toljy"
+        print_report_name="(object.state in ('open','paid')) and ((object.number or '').replace('/','')+'.pdf')"/>
+
+    <template id="toljy_templates.report_invoice_toljy" name="report_invoice_toljy">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})"/>
+            <t t-call="web.html_container">
+                <t t-call="toljy_templates.report_invoice_toljy_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+    
+    <template id="toljy_templates.report_invoice_toljy_document" name="report_invoice_toljy_document">
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id.sudo()"/>
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+        <t t-call="web.external_layout_background"> 
+            <div class="page">
+                <t t-set="is_cfdi_signed" t-value="bool(o._get_l10n_mx_edi_signed_edi_document())"/>
+                <t t-if="o.l10n_mx_edi_cfdi_request in ('on_invoice', 'on_refund') and not is_cfdi_signed">
+                    <!-- due to HTML preview for device responsive -->
+                    <button t-attf-class="btn-danger #{'btn' if report_type != 'html' else ''}">
+                        <strong>A signature of this invoice is required, but it is not signed.</strong>
+                    </button>
+                </t>
+
+                <t t-if="o.l10n_mx_edi_cfdi_uuid">
+                    <!--New global variables-->
+                   <t t-set="xml" t-value="o._l10n_mx_edi_decode_cfdi()"/>
+                </t>
+
+                <div class="row">
+                    <div class="col-3">
+                        <img t-if="o.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.company_id.logo)" class="pull-left" style="max-height:104px;"/>
+                    </div>
+                    <div class="col-9">
+                        <div class="bg_theme_color text-left">
+                            <span class="fa fa-building"/>
+                            <strong t-field="o.company_id.partner_id.name"/>
+                        </div>
+                        <div class="text-left" name="company_address" style="text-size: ">
+                            <span t-field="o.company_id.partner_id.street_name"/><span> No.</span>
+                            <span t-field="o.company_id.partner_id.street_number"/><span>, Col.</span>
+                            <span t-field="o.company_id.partner_id.colonia_id"/><span>, Deleg. </span>
+                            <span t-field="o.company_id.partner_id.municipio_id"/><span>, </span>
+                            <span t-field="o.company_id.partner_id.ciudad_id"/><span>, </span>
+                            <span t-field="o.company_id.partner_id.country_id"/><span>, CP </span>
+                            <span t-field="o.company_id.partner_id.zip"/><span>,</span>
+                            <t t-if="o.company_id.partner_id.vat"> RFC: <span t-field="o.company_id.partner_id.vat"/></t>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5">
+                        <div class="bg_theme_color text-left">
+                            <span class="fa fa-building-o"/>
+                            <strong t-field="o.partner_id.name"/>
+                        </div>
+                        <div class="text-left" name="partner_address" style="font-size: 11px;">
+                            <span t-field="o.partner_id.street_name"/><span> No. </span>
+                            <span t-field="o.partner_id.street_number"/><span>,</span>
+                            <t t-if="o.partner_id.street_number2"> Int. <span t-field="o.partner_id.street_number2"/><span>,</span></t>
+                            <t t-if="o.partner_id.colonia_id"> <span> Col. </span><span t-field="o.partner_id.colonia_id"/><span>, </span></t>
+                            <span t-field="o.partner_id.colonia_id"/><span>, </span>
+                            <span t-field="o.partner_id.municipio_id"/><span>, </span>
+                            <span t-field="o.partner_id.ciudad_id"/><span>, </span>
+                            <t t-if="o.partner_id.state_id"> <span t-field="o.partner_id.state_id"/><span>, </span></t>
+                            <span t-field="o.partner_id.country_id"/><span>, CP </span>
+                            <span t-field="o.partner_id.zip"/>
+                            <p t-if="o.partner_id.vat">RFC: <span t-field="o.partner_id.vat"/></p>
+                            <p t-if="o.partner_id.ref">Numero de Cliente: <span t-field="o.partner_id.ref"/></p>
+                            <t t-if="xml"><p>Uso CFDI: <span t-esc="xml.get('usage')"/>  <span t-field="o.l10n_mx_edi_usage"/> </p></t>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <t t-if="o.partner_shipping_id">
+                            <div class="bg_theme_color text-left">
+                                <span class="fa fa-truck"/>
+                                <strong t-field="o.partner_shipping_id.name"/>
+                            </div>
+                            <div class="text-left" name="shipping_address" style="font-size: 11px;">
+                                <span t-field="o.partner_shipping_id.street_name"/><span> No.</span>
+                                <span t-field="o.partner_shipping_id.street_number"/><span>,</span>
+                                <t t-if="o.partner_shipping_id.street_number2"> Int. <span t-field="o.partner_shipping_id.street_number2"/><span>,</span></t>
+                                <t t-if="o.partner_shipping_id.colonia_id"> <span> Col.</span><span t-field="o.partner_shipping_id.colonia_id"/><span>, </span></t>
+                                <span t-field="o.partner_shipping_id.municipio_id"/><span>, </span>
+                                <span t-field="o.partner_shipping_id.ciudad_id"/><span>, </span>
+                                <t t-if="o.partner_shipping_id.state_id"> <span t-field="o.partner_shipping_id.state_id"/><span>, </span></t>
+                                <span t-field="o.partner_shipping_id.country_id"/><span>, CP </span>
+                                <span t-field="o.partner_shipping_id.zip"/>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg_theme_color text-left" style="font-size: 11px;">
+                            <strong>Comprobante: </strong>
+                            <strong t-if="o.move_type == 'out_invoice' ">Ingreso</strong>
+                            <strong t-if="o.move_type == 'out_refund'">Egreso</strong>
+                        </div>
+                        <div class="text-left" name="tipo_comprobante">
+                            <p style="text-align:left; font-size:12px; font-weight:bold; color:#333 !important; ">
+                                <spam> Folio : </spam><spam t-field="o.name"/></p>
+                            <p style="font-size:12px; ">
+                                <strong>Fecha: </strong><spam t-field="o.invoice_date"/></p>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-condensed table-bordered" style="font-size:10px;">
+                    <tr>
+                        <td><strong>Doc origen:</strong></td>
+                        <td><spam t-field="o.invoice_origin"/></td>
+                        <td><strong>Orden de Compra:</strong></td>
+                        <td><spam t-field="o.orden_compra"/></td>
+                        <td><strong>Vendedor:</strong></td>
+                        <td><spam t-field="o.user_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lugar de Expedición:</strong></td>
+                        <td><spam t-field="o.company_id.partner_id.commercial_partner_id.zip"/></td>
+                        <td><strong>Moneda:</strong></td>
+                        <td><spam t-field="o.currency_id.name"/></td>
+                        <td><strong>Tipo de Cambio:</strong></td>
+                        <td>
+                            <t t-if=" xml and xml.get('TipoCambio')">
+                                <span t-esc="xml.get('TipoCambio')"/>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="table table-condensed" style="font-size:10px;" id="cfdi_conceptos">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;"><strong>ClaveSAT:</strong></th>
+                            <th><strong>Concepto:</strong></th>
+                            <th style="width:15%;"><strong>Cantidad:</strong></th>
+                            <th style="width:10%;"><strong>Valor Unitario:</strong></th>
+                            <th style="width:5%;"><strong>Desc(%):</strong></th>
+                            <th style="width:15%;"><strong>Importe:</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.invoice_line_ids" t-as="l">
+                            <tr>
+                                <td class="text-left">
+                                    <strong><span t-field="l.product_id.unspsc_code_id.code"/></strong>
+                                </td>
+                                <td class="text-left">
+                                    <strong><span t-field="l.name"/></strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong> <span t-esc="'%.2f' % l.quantity"/>
+                                    <span t-field="l.uom_id" groups="product.group_uom"/></strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong> <span t-field="l.price_unit"/></strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong> <span t-field="l.discount"/></strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong><span t-field="l.price_subtotal" t-field-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
+                                </td>
+                            </tr>
+                            <t t-foreach="l.get_lots()" t-as="lot">
+                                <tr>
+                                    <td class="text-left">
+                                        <strong>Lote </strong>
+                                    </td>  
+                                    <td class="text-left">
+                                        <strong><span t-esc="lot['name']"/></strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong><span t-esc="lot['qty_done']"/> 
+                                        <span t-esc="lot['uom_id'].name"/></strong>
+                                    </td>
+                                    <td/>
+                                    <td/>
+                                    <td/>
+                                </tr>
+                            </t>
+                        </t>
+                        <tr>
+                            <td class="text-left"><br/> </td>
+                            <td class="text-left"/>
+                            <td class="text-left"/>
+                            <td class="text-left"/>
+                            <td class="text-left"/>
+                            <td class="text-left"/>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-condensed" style="font-size:10px;" id="cfdi_conceptos">
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">
+                                <strong>Cantidad con Letra:</strong> <br/>
+                                <span t-esc="o._l10n_mx_edi_cfdi_amount_to_text()"/>
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <table style="width:100%">
+                                    <tr>
+                                        <td class="text-right"> <strong>Sub-total: </strong> </td>
+                                    </tr>
+                                    <t t-if="xml and xml.get('Descuento')">
+                                        <tr>
+                                            <td class="text-right"> <strong>Descuento: </strong> </td>
+                                        </tr>
+                                    </t>
+
+                                    <t t-foreach="o.amount_by_group" t-as="amount_by_group">
+                                        <tr style="">
+                                            <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) == 1 and o.amount_untaxed == amount_by_group[2]">
+                                                <td><span t-esc="amount_by_group[0]"/></td>
+                                            </t>
+                                            <t t-else="">
+                                                <td>
+                                                    <span t-esc="amount_by_group[0]"/>
+                                                    <span>&amp;nbsp;<span>on</span>
+                                                        <t t-esc="amount_by_group[4]"/>
+                                                    </span>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td class="text-right"> <strong>Total: </strong> </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="text-right">
+                                <table style="width:100%">
+                                    <tr>
+                                        <td class="text-right">
+                                            <strong><span t-esc="float(xml and xml.get('SubTotal', 0) or o.amount_untaxed)" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/></strong> 
+                                        </td>
+                                    </tr>
+                                    <t t-if="xml and xml.get('Descuento')">
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>  <span t-esc="float(xml.get('Descuento'))" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/></strong>
+                                            </td> 
+                                        </tr>
+                                    </t>
+
+                                    <t t-foreach="o.amount_by_group" t-as="amount_by_group">
+                                        <tr style="">
+                                            <td class="text-right o_price_total">
+                                                <span t-esc="amount_by_group[3]"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <tr>
+                                        <td class="text-right"> <strong><span t-field="o.amount_total" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/> </strong></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <t t-if="o.get_sale_order() and o.env['ir.module.module'].sudo().search([('name','=','sale_transport'),('state','=','installed')])  and o.get_sale_order().paga_transporte  and o.get_sale_order().transport_id and o.get_sale_order().transport_id.name !='.'">
+                    <table class="table table-condensed" style="width: 100%;" id="info">
+                          
+                        <thead>
+                            <tr>
+                                <th><span>TRANSPORTE:</span> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-left"><p style="font-size:11px "><strong><spam t-esc="o.get_sale_order().transport_id.name or '' "/>
+                                    <spam t-esc="' ' + str(o.get_sale_order().transport_condition_id.name or '') "/></strong></p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+                <t t-if="o.narration">
+                    <table class="table table-condensed" style="width: 100%;" id="info">
+                        <thead>
+                            <tr>
+                                <th colspan="2"><span>NOTAS:</span> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><p style="font-size:11px "><strong><spam t-field="o.narration"/></strong></p></td></tr>
+                        </tbody>
+                    </table>
+                </t>
+                <t t-if="o.l10n_mx_edi_cfdi_uuid">
+                    <table class="table table-condensed" style="font-size:10px;" id="info">
+                        <thead>
+                            <tr>
+                                <th colspan="5"><span>Este documento es una representación impresa de un CFDI</span> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Emisor: </strong></td>
+                                <td><span t-esc="o.company_id.partner_id.name"/></td>
+                                <td style="width: 5%;"/>
+                                <td><strong>Régimen Fiscal: </strong></td>
+                                <td><span t-esc="xml and xml.get('fiscal_regime')"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Terminos de Pagos: </strong></td>
+                                <td><span t-esc="o.invoice_payment_term_id.name"/></td>
+                                <td style="width: 5%;"/>
+                                <td><strong>Metodo  de Pago: </strong></td>
+                                <td><span t-esc="xml and xml.get('payment_method')"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Forma de Pago: </strong></td>
+                                <td><span t-esc="' - '.join([o.l10n_mx_edi_payment_method_id.code, o.l10n_mx_edi_payment_method_id.name])"/></td>
+                                <td style="width: 5%;"/>
+                                <td><strong>Número de Cuenta de Pago: </strong></td>
+                                <td>
+                                    <span t-esc="xml and xml.get('bank_account')"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <t t-if="xml">
+                        <div class="row" id="complement">
+                            <div class="barcode col-2">
+
+                                <t t-set="sello" t-value="xml.get('sello')[-8:]"/>
+                                <img t-att-src="'/report/barcode/?type=QR&amp;value=%s' % quote_plus('https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id='+o.l10n_mx_edi_cfdi_uuid+'&amp;re='+o.l10n_mx_edi_cfdi_supplier_rfc+'&amp;rr='+o.l10n_mx_edi_cfdi_customer_rfc+'&amp;tt=%.2f'% o.l10n_mx_edi_cfdi_amount+'&amp;fe=%s' % quote_plus(sello, 'utf-8', 'strict', '=/').replace('%2B', '+'))" style="vertical-align: text-top; width:140px!important; height:140px!important;"/>
+                            </div>
+                            <div class="complement-details col-10">
+                                <div class="digital-stamp">
+                                    <span>Sello digital del emisor</span>
+                                </div>
+                                <div class="digital-stamp-content">
+                                    <span t-esc="xml.get('sello')"/>
+                                </div>
+                                <div class="digital-stamp">
+                                    <span>Sello digital del SAT</span>
+                                </div>
+                                <div class="digital-stamp-content">
+                                    <span t-esc="xml.get('sello_sat')"/>
+                                </div>
+                                <div class="digital-stamp">
+                                    <span>Cadena original del complemento del certificado del  SAT</span>
+                                </div>
+                                <div class="digital-stamp-content">
+                                    <span class="nowrap" t-esc="xml.get('cadena')"/>
+                                </div>
+                                <div class="digital-stamp">
+                                    <span>Información Extra</span>
+                                </div>
+                                <div class="digital-stamp-content">
+                                    <span>Certificado del emisor:</span> <span t-esc="xml.get('certificate_number')"/>
+                                    <span> | Certificado del SAT:</span> <span t-esc="xml.get('certificate_sat_number')"/>
+                                    <span> | Lugar de Expedición:</span> <span t-esc="xml.get('expedition')"/>
+                                    <span> | Fecha de Emisión:</span> <span t-esc="xml.get('emission_date_str')"/>
+                                    <span> | Fecha de Certificación:</span> <span t-esc="xml.get('stamp_date')"/>
+                                    <span> | Folio Fiscal:</span> <span t-esc="xml.get('uuid')"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </t> 
+    </template>
+</odoo>
+
