@@ -53,9 +53,9 @@
                         <div class="text-left" name="company_address" style="text-size: ">
                             <span t-field="o.company_id.partner_id.street_name"/><span> No.</span>
                             <span t-field="o.company_id.partner_id.street_number"/><span>, Col.</span>
-                            <span t-field="o.company_id.partner_id.colonia_id"/><span>, Deleg. </span>
-                            <span t-field="o.company_id.partner_id.municipio_id"/><span>, </span>
-                            <span t-field="o.company_id.partner_id.ciudad_id"/><span>, </span>
+                            <span t-field="o.company_id.partner_id.l10n_mx_edi_colony"/><span>, Deleg. </span>
+                            <span t-field="o.company_id.partner_id.city"/><span>, </span>
+                            <span t-field="o.company_id.partner_id.city_id"/><span>, </span>
                             <span t-field="o.company_id.partner_id.country_id"/><span>, CP </span>
                             <span t-field="o.company_id.partner_id.zip"/><span>,</span>
                             <t t-if="o.company_id.partner_id.vat"> RFC: <span t-field="o.company_id.partner_id.vat"/></t>
@@ -73,10 +73,10 @@
                             <span t-field="o.partner_id.street_name"/><span> No. </span>
                             <span t-field="o.partner_id.street_number"/><span>,</span>
                             <t t-if="o.partner_id.street_number2"> Int. <span t-field="o.partner_id.street_number2"/><span>,</span></t>
-                            <t t-if="o.partner_id.colonia_id"> <span> Col. </span><span t-field="o.partner_id.colonia_id"/><span>, </span></t>
-                            <span t-field="o.partner_id.colonia_id"/><span>, </span>
-                            <span t-field="o.partner_id.municipio_id"/><span>, </span>
-                            <span t-field="o.partner_id.ciudad_id"/><span>, </span>
+                            <t t-if="o.partner_id.l10n_mx_edi_colony"> <span> Col. </span><span t-field="o.partner_id.l10n_mx_edi_colony"/><span>, </span></t>
+                            <span t-field="o.partner_id.l10n_mx_edi_colony"/><span>, </span>
+                            <span t-field="o.partner_id.city"/><span>, </span>
+                            <span t-field="o.partner_id.city_id"/><span>, </span>
                             <t t-if="o.partner_id.state_id"> <span t-field="o.partner_id.state_id"/><span>, </span></t>
                             <span t-field="o.partner_id.country_id"/><span>, CP </span>
                             <span t-field="o.partner_id.zip"/>
@@ -95,9 +95,9 @@
                                 <span t-field="o.partner_shipping_id.street_name"/><span> No.</span>
                                 <span t-field="o.partner_shipping_id.street_number"/><span>,</span>
                                 <t t-if="o.partner_shipping_id.street_number2"> Int. <span t-field="o.partner_shipping_id.street_number2"/><span>,</span></t>
-                                <t t-if="o.partner_shipping_id.colonia_id"> <span> Col.</span><span t-field="o.partner_shipping_id.colonia_id"/><span>, </span></t>
-                                <span t-field="o.partner_shipping_id.municipio_id"/><span>, </span>
-                                <span t-field="o.partner_shipping_id.ciudad_id"/><span>, </span>
+                                <t t-if="o.partner_shipping_id.l10n_mx_edi_colony"> <span> Col.</span><span t-field="o.partner_shipping_id.l10n_mx_edi_colony"/><span>, </span></t>
+                                <span t-field="o.partner_shipping_id.city"/><span>, </span>
+                                <span t-field="o.partner_shipping_id.city_id"/><span>, </span>
                                 <t t-if="o.partner_shipping_id.state_id"> <span t-field="o.partner_shipping_id.state_id"/><span>, </span></t>
                                 <span t-field="o.partner_shipping_id.country_id"/><span>, CP </span>
                                 <span t-field="o.partner_shipping_id.zip"/>
@@ -124,7 +124,7 @@
                         <td><strong>Doc origen:</strong></td>
                         <td><spam t-field="o.invoice_origin"/></td>
                         <td><strong>Orden de Compra:</strong></td>
-                        <td><spam t-field="o.orden_compra"/></td>
+                        <td><spam t-field="o.purchase_id.name"/></td>
                         <td><strong>Vendedor:</strong></td>
                         <td><spam t-field="o.user_id.name"/></td>
                     </tr>
@@ -176,7 +176,7 @@
                                     <strong><span t-field="l.price_subtotal" t-field-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
                                 </td>
                             </tr>
-                            <t t-foreach="l.get_lots()" t-as="lot">
+                            <!--<t t-foreach="l.get_lots()" t-as="lot">
                                 <tr>
                                     <td class="text-left">
                                         <strong>Lote </strong>
@@ -192,7 +192,7 @@
                                     <td/>
                                     <td/>
                                 </tr>
-                            </t>
+                            </t>-->
                         </t>
                         <tr>
                             <td class="text-left"><br/> </td>
@@ -275,7 +275,7 @@
                     </tfoot>
                 </table>
 
-                <t t-if="o.get_sale_order() and o.env['ir.module.module'].sudo().search([('name','=','sale_transport'),('state','=','installed')])  and o.get_sale_order().paga_transporte  and o.get_sale_order().transport_id and o.get_sale_order().transport_id.name !='.'">
+                <!--<t t-if="o.get_sale_order() and o.env['ir.module.module'].sudo().search([('name','=','sale_transport'),('state','=','installed')])  and o.get_sale_order().paga_transporte  and o.get_sale_order().transport_id and o.get_sale_order().transport_id.name !='.'">
                     <table class="table table-condensed" style="width: 100%;" id="info">
                           
                         <thead>
@@ -291,7 +291,7 @@
                             </tr>
                         </tbody>
                     </table>
-                </t>
+                </t>-->
                 <t t-if="o.narration">
                     <table class="table table-condensed" style="width: 100%;" id="info">
                         <thead>
