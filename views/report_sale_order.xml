@@ -298,4 +298,19 @@
                 </div>
         </t>
     </template>
+
+    <!-- FORMATO DE PAPEL (CONTRATO) -->
+    <record id="toljy_templates.sale_order_paperformat" model="report.paperformat">
+        <field name="name">US Letter Sale Order Landscape</field>
+        <field name="format">Letter</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">27</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_spacing">25</field>
+        <field name="dpi">90</field>
+        <field name="report_ids" eval="[(4, ref('toljy_templates.action_report_sale_order_toljy'))]"/>
+    </record>
+
 </odoo>
