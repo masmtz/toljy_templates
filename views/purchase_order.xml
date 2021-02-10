@@ -15,4 +15,20 @@
             </t>
         </xpath>
     </template>
+
+    <template id="toljy_templates.report_purchasequotation_document_toljy" name="report_purchaseoquotation_document_toljy" inherit_id="purchase.report_purchasequotation_document">
+        <xpath expr="//td[@id='product']" position="inside">
+            <t t-foreach="order_line.product_id.seller_ids" t-as="s">
+                <t t-if="s.display_name==o.partner_id.name">
+                    <br/>
+                    <t t-if="s.product_code">
+                        <em>Clave alterna <span t-field="s.product_code"/></em>
+                    </t>
+                    <t t-if="not s.product_code">
+                        <em>Sin clave alterna definida</em>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
 </odoo>
