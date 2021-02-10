@@ -1,67 +1,16 @@
 <?xml version="1.0"?>
 <odoo>
     <template id="toljy_templates.report_purchaseorder_document_toljy" name="report_purchaseorder_document_toljy" inherit_id="purchase.report_purchaseorder_document">
-        <xpath expr="//t[@t-if='o.dest_address_id']" position="after">
-            <t t-else="">
-                <t t-set="information_block">
-                    <strong>Shipping address:</strong>
-                    <div t-if="o.picking_type_id and o.picking_type_id.warehouse_id">
-                        <span t-field="o.picking_type_id.warehouse_id.name"/>
-                        <div t-field="o.picking_type_id.warehouse_id.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
-                    </div>
-                </t>
-            </t>
-        </xpath>
-        <xpath expr="//div[@t-if='o.date_order']" position="after">
-            <div t-if="o.incoterm_id" class="col-3 bm-2">
-                <strong>Incoterm:</strong>
-                <p t-field="o.incoterm_id.code" class="m-0"/>
-            </div>
-        </xpath>
-
-        <xpath expr="/t/t/div/div[4]" position="after">
-            <div class="row">
-                <div class="col">
-                    <span>New Text Block</span>
-                </div>
-            </div>
-        </xpath>
-        <xpath expr="/t/t/div/div[5]/div/span" position="replace">
-            <span>
-                <p>Favor de entregar el material con factura y orden de compra para recepción del mismo y enviar archivos xml y pdf a jgarcia@toljy.com y rperezg@.com.</p>
-                <p>En su momento enviar los complementos de pago correspondientes .</p>
-            </span>
-        </xpath>
-        <xpath expr="/t[1]/t[1]/t[4]/t[1]/div[1]/span[1]" position="attributes">
-            <attribute name="t-field">o.picking_type_id.warehouse_id.partner_id</attribute>
-        </xpath>
-        <xpath expr="/t/t/div/div[2]/div[1]/strong" position="replace">
-            <strong>Compradorr:</strong>
-        </xpath>
-        <xpath expr="/t/t/div/div[2]/div[1]/strong" position="replace">
-            <strong>Comprador:</strong>
-        </xpath>
-        <xpath expr="/t/t/div/div[5]/div/span/p[1]" position="replace">
-            <p>Favor de entregar el material con factura y orden de compra para recepción del mismo y enviar archivos xml y pdf a jgarcia@toljy.com y rperezg@.com. Entrega el material en la Dirección de envío.</p>
-        </xpath>
-        <xpath expr="/t/t/div/table/thead/tr/th[3]/strong" position="replace">
-            <strong>F. Requerida</strong>
-        </xpath>
-        <xpath expr="/t/t/div/table/thead/tr/th[3]/strong" position="replace">
-            <strong>Fech. Req.</strong>
-        </xpath>
-        <xpath expr="/t/t/div/div[5]/div/span/p[1]" position="replace">
-            <p>Favor de entregar el material con factura y orden de compra para recepción del mismo y enviar archivos xml y pdf a jgarcia@toljy.com y rperezg@toljy.com. Entrega el material en la Dirección de envío.</p>
-        </xpath>
         <xpath expr="//td[@id='product']" position="inside">
             <t t-foreach="line.product_id.seller_ids" t-as="s">
                 <t t-if="s.display_name==o.partner_id.name">
-                    [<span t-field="s.product_code"/>] <span t-field="s.product_name"/>
-                </t>
-                <t t-if="not s.display_name==o.partner_id.name">
-                    <span t-field="s.display_name"/><br/>
-                    <span t-field="o.partner_id.name"/><br/>
-                    sin clave alterna definida
+                    <br/>
+                    <t t-if="s.product_code">
+                        <em>Clave alterna <span t-field="s.product_code"/></em>
+                    </t>
+                    <t t-if="not s.product_code">
+                        <em>Sin clave alterna definida</em>
+                    </t>
                 </t>
             </t>
         </xpath>
