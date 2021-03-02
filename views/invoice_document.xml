@@ -124,7 +124,7 @@
                         <td><strong>Doc origen:</strong></td>
                         <td><spam t-field="o.invoice_origin"/></td>
                         <td><strong>Orden de Compra:</strong></td>
-                        <td><spam t-field="o.purchase_id.name"/></td>
+                        <td><spam t-field="o.ref"/></td>
                         <td><strong>Vendedor:</strong></td>
                         <td><spam t-field="o.user_id.name"/></td>
                     </tr>
@@ -155,44 +155,51 @@
                     </thead>
                     <tbody>
                         <t t-foreach="o.invoice_line_ids" t-as="l">
-                            <tr>
-                                <td class="text-left">
-                                    <strong><span t-field="l.product_id.unspsc_code_id.code"/></strong>
-                                </td>
-                                <td class="text-left">
-                                    <strong><span t-field="l.name"/></strong>
-                                </td>
-                                <td class="text-right">
-                                    <strong> <span t-esc="'%.2f' % l.quantity"/>
-                                    <span t-field="l.uom_id" groups="product.group_uom"/></strong>
-                                </td>
-                                <td class="text-right">
-                                    <strong> <span t-field="l.price_unit"/></strong>
-                                </td>
-                                <td class="text-right">
-                                    <strong> <span t-field="l.discount"/></strong>
-                                </td>
-                                <td class="text-right">
-                                    <strong><span t-field="l.price_subtotal" t-field-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
-                                </td>
-                            </tr>
-                            <!--<t t-foreach="l.get_lots()" t-as="lot">
+                            <t t-if="l.product_id">
                                 <tr>
                                     <td class="text-left">
-                                        <strong>Lote </strong>
-                                    </td>  
+                                        <strong><span t-field="l.product_id.unspsc_code_id.code"/></strong>
+                                    </td>
                                     <td class="text-left">
-                                        <strong><span t-esc="lot['name']"/></strong>
+                                        <strong><span t-field="l.name"/></strong>
                                     </td>
                                     <td class="text-right">
-                                        <strong><span t-esc="lot['qty_done']"/> 
-                                        <span t-esc="lot['uom_id'].name"/></strong>
+                                        <strong> <span t-esc="'%.2f' % l.quantity"/>
+                                        <span t-field="l.uom_id" groups="product.group_uom"/></strong>
                                     </td>
-                                    <td/>
-                                    <td/>
-                                    <td/>
+                                    <td class="text-right">
+                                        <strong> <span t-field="l.price_unit"/></strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong> <span t-field="l.discount"/></strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong><span t-field="l.price_subtotal" t-field-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
+                                    </td>
                                 </tr>
-                            </t>-->
+                                <!--<t t-foreach="l.get_lots()" t-as="lot">
+                                    <tr>
+                                        <td class="text-left">
+                                            <strong>Lote </strong>
+                                        </td>  
+                                        <td class="text-left">
+                                            <strong><span t-esc="lot['name']"/></strong>
+                                        </td>
+                                        <td class="text-right">
+                                            <strong><span t-esc="lot['qty_done']"/> 
+                                            <span t-esc="lot['uom_id'].name"/></strong>
+                                        </td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                    </tr>
+                                </t>-->
+                            </t>
+                            <t t-if="not l.product_id and l.name">
+                                <td colspan="6" class="text-left">
+                                    <strong><span t-field="l.name"/></strong>
+                                </td>
+                          </t>
                         </t>
                         <tr>
                             <td class="text-left"><br/> </td>

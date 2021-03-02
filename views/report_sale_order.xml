@@ -88,7 +88,7 @@
                 <div class="oe_structure"/>
                 <div class="row mt8" id="informations" style="font-size: 14px !important;">
                     
-                    <div t-if="doc.date_order and doc.state not in ['cancel']" class="col-5 mb-1">
+                    <div t-if="doc.date_order and doc.state not in ['cancel']" class="col-3 mb-1">
                         <strong>Fecha de la Orden: </strong>
                         <span class="m-0" t-field="doc.date_order"/>
                     </div>
@@ -96,9 +96,13 @@
                         <strong>Comercial: </strong>
                         <span class="m-0" t-field="doc.user_id"/>
                     </div>
-                    <div class="col-4 mb-2">
+                    <div class="col-3 mb-2">
                         <strong>Moneda : </strong>
                         <span class="m-0" t-esc="'%s (%s)' % (doc.pricelist_id.currency_id.currency_unit_label, doc.pricelist_id.currency_id.name)"/>
+                    </div>
+                    <div t-if="not doc.pricelist_id.name == 'Tarifa pública'"  class="col-3 mb-2">
+                        <strong>Tarifa : </strong>
+                        <span t-field="doc.pricelist_id"/><br/>
                     </div>
                 </div>
                 <div class="row mt8" id="informations2" style="font-size: 14px !important;">
@@ -113,7 +117,7 @@
                 <table style="margin-bottom: 1px !important;" class="table table-condensed table-striped table-sm table-bordered">
                     <thead>
                         <tr>
-                            <t t-set="colspan" t-value="6"/>
+                            <t t-set="colspan" t-value="8"/>
                             
                             <th class="text-center bg-200 font-weight-bold" style="width: 2%; font-size: 10px !important;">Pr</th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 15%; font-size: 10px !important;">Imagen</th>
@@ -157,6 +161,9 @@
                                         <span t-esc="'%i'%(line.product_uom_qty)"/>
                                         <span t-field="line.product_uom" groups="uom.group_uom"/>
                                     </td>
+                                    <td t-if="not doc.pricelist_id.name == 'Tarifa pública'" style="margin:0px; padding: 1px;" class="text-right">
+                                        <span t-field="line.product_id.lst_price"/><br/>
+                                    </td>
                                     <td style="margin:0px; padding: 1px;" class="text-right">
                                         <span t-field="line.price_unit"/><br/>
                                     </td>
@@ -169,9 +176,6 @@
                                     </td>
                                 </t>
                                 <t t-if="line.display_type == 'line_section'">
-                                    <td class="text-center" style="margin:0px; padding: 1px;">
-                                        <span t-esc="line_index+1"/>
-                                    </td> 
                                     <td style="margin:0px; padding: 1px;" t-att-colspan="colspan">
                                         <span t-field="line.name"/>
                                     </td>
@@ -179,9 +183,6 @@
                                     <t t-set="current_subtotal" t-value="0"/>        
                                 </t>
                                 <t t-if="line.display_type == 'line_note'">
-                                    <td class="text-center" style="margin:0px; padding: 1px;">
-                                        <span t-esc="line_index+1"/>
-                                    </td> 
                                     <td style="margin:0px; padding: 1px;" t-att-colspan="colspan">
                                         <span t-field="line.name"/>
                                     </td>

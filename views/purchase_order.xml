@@ -14,6 +14,17 @@
                 </t>
             </t>
         </xpath>
+        <xpath expr="//th[@name='th_description']" position="replace">
+            <th name="th_description" width="50%"><strong>Description</strong></th>
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th><strong>Imagen</strong></th>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="before">
+            <td>
+                <div style="height:70px; width:70px;" t-field="line.product_id.image_128" t-options-widget="&quot;image&quot;"/>
+            </td>
+        </xpath>
     </template>
 
     <template id="toljy_templates.report_purchasequotation_document_toljy" name="report_purchaseoquotation_document_toljy" inherit_id="purchase.report_purchasequotation_document">
