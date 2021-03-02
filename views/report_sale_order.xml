@@ -126,6 +126,7 @@
                             <th class="text-center bg-200 font-weight-bold" style="width: 8%; font-size: 10px !important;">Cantidad</th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 10%; font-size: 10px !important;">Precio Unitario 
                             </th>
+                            <th class="text-center bg-200 font-weight-bold" style="width: 10%; font-size: 10px !important;" t-if="not doc.pricelist_id.name == 'Tarifa pública'">Precio U. Tarifa</th>
                             <th t-if="display_discount" class="text-center bg-200 font-weight-bold" style="width: 8%; font-size: 10px !important;">
                                 <span>% Desc.</span>
                                 <t t-set="colspan" t-value="colspan+1"/>
