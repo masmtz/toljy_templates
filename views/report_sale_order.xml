@@ -131,10 +131,10 @@
                                 <span>% Desc.</span>
                                 <t t-set="colspan" t-value="colspan+1"/>
                             </th>
-                            <td style="margin:0px; padding: 1px;" t-if="display_discount" class="text-right">
-                                <t t-set="unit_price_disc" t-value="line.price_unit/(1+line.discount/100)"/>
-                                <t t-esc="'{0:,.4f}'.format(unit_price_disc)" /><br/>
-                            </td>
+                            <th t-if="display_discount" class="text-center bg-200 font-weight-bold" style="width: 8%; font-size: 10px !important;">
+                                <span>Precio U. C/Desc.</span>
+                                <t t-set="colspan" t-value="colspan+1"/>
+                            </th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 10%; font-size: 10px !important;">
                                 <span>Importe</span>
                             </th>
