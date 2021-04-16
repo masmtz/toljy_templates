@@ -127,6 +127,7 @@
                         <td><spam t-field="o.ref"/></td>
                         <td><strong>Vendedor:</strong></td>
                         <td><spam t-field="o.user_id.name"/></td>
+                        <td><strong>Almacén</strong></td>
                     </tr>
                     <tr>
                         <td><strong>Lugar de Expedición:</strong></td>
@@ -137,6 +138,11 @@
                         <td>
                             <t t-if=" xml and xml.get('TipoCambio')">
                                 <span t-esc="xml.get('TipoCambio')"/>
+                            </t>
+                        </td>
+                        <td>
+                            <t t-if="o.invoice_line_ids and o.invoice_line_ids[0].sale_line_ids and o.invoice_line_ids[0].sale_line_ids[0]">
+                                <span t-esc="o.invoice_line_ids[0].sale_line_ids[0].order_id.warehouse_id.name"/>
                             </t>
                         </td>
                     </tr>
