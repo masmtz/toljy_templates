@@ -67,7 +67,7 @@
                     <div class="col-5">
                         <div class="bg_theme_color text-left">
                             <span class="fa fa-building-o"/>
-                            <strong t-field="o.partner_id.name"/>
+                            <strong t-field="o.partner_id.name if not o.partner_id.parent_id else o.partner_id.parent_id.name"/>
                         </div>
                         <div class="text-left" name="partner_address" style="font-size: 11px;">
                             <span t-field="o.partner_id.street_name"/><span> No. </span>
