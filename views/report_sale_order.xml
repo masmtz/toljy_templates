@@ -100,7 +100,7 @@
                         <strong>Moneda : </strong>
                         <span class="m-0" t-esc="'%s (%s)' % (doc.pricelist_id.currency_id.currency_unit_label, doc.pricelist_id.currency_id.name)"/>
                     </div>
-                    <div t-if="not doc.pricelist_id.name == 'Tarifa pública'"  class="col-3 mb-2">
+                    <div t-if="not doc.pricelist_id.name == 'Tarifa pública'" class="col-3 mb-2">
                         <strong>Tarifa : </strong>
                         <span t-field="doc.pricelist_id"/><br/>
                     </div>
@@ -113,7 +113,9 @@
                 </div>
                 <!-- Is there a discount on at least one line? -->
                 <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
-
+                
+                <t t-set="total_volume" t-value="0"/>
+                <t t-set="total_weight" t-value="0"/>
                 <table style="margin-bottom: 1px !important;" class="table table-condensed table-striped table-sm table-bordered">
                     <thead>
                         <tr>
@@ -123,6 +125,7 @@
                             <th class="text-center bg-200 font-weight-bold" style="width: 15%; font-size: 10px !important;">Imagen</th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 5%; font-size: 10px !important;">Clave Sat</th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 33%; font-size: 10px !important;">[Clave] Descripción</th>
+                            <th class="text-center bg-200 font-weight-bold" style="width: 10%; font-size: 10px !important;">Plazos de entrega</th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 8%; font-size: 10px !important;">Cantidad</th>
                             <th class="text-center bg-200 font-weight-bold" style="width: 10%; font-size: 10px !important;">Precio Unitario 
                             </th>
@@ -159,7 +162,14 @@
                                         <span t-field="line.product_id.unspsc_code_id.code"/>
                                     </td>
                                     <td style="margin:0px; padding: 1px;">
-                                        <span t-field="line.name"/>
+                                        <span t-field="line.name"/><br/>
+                                        Volumen <span t-field="line.product_id.volume"/> M3<br/>
+                                        <t t-set="total_volume" t-value="total_volume+line.product_id.volume"/>
+                                        Peso <span t-field="line.product_id.weight"/> Kg
+                                        <t t-set="total_weight" t-value="total_weight+line.product_id.weight"/>
+                                    </td>
+                                    <td style="margin:0px; padding: 1px;">
+                                      <span t-field="line.product_id.sale_delay"/> Día(s)
                                     </td>
                                     <td style="margin:0px; padding: 1px;" class="text-right ">
                                         <span t-esc="'%i'%(line.product_uom_qty)"/>
@@ -176,7 +186,7 @@
                                     </td>
                                     <td style="margin:0px; padding: 1px;" t-if="display_discount" class="text-right">
                                         <t t-set="unit_price_disc" t-value="line.price_unit/(1+line.discount/100)"/>
-                                        <t t-esc="'{0:,.4f}'.format(unit_price_disc)" /><br/>
+                                        <t t-esc="'{0:,.4f}'.format(unit_price_disc)"/><br/>
                                     </td>
                                     <td style="margin:0px; padding: 1px;" class="text-right o_price_total">
                                         <span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
@@ -211,6 +221,16 @@
                 <div>
                     <div id="total" class="row" name="total">
                         <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'}">
+                            <table>
+                              <tr>
+                                <td style="margin:0px; padding: 2px;">Total Volumen</td>
+                                <td style="margin:0px; padding: 2px;" class="text-right"><span t-esc="total_volume"/> M3</td>
+                              </tr>
+                              <tr>
+                                <td style="margin:0px; padding: 2px;">Total Peso</td>
+                                <td style="margin:0px; padding: 2px;" class="text-right"><span t-esc="total_weight"/> Kg</td>
+                              </tr>
+                            </table>
                             <p t-if="doc.note">
                                 <span t-field="doc.note"/>
                             </p>
