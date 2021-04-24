@@ -164,12 +164,12 @@
                                     <td style="margin:0px; padding: 1px;">
                                         <span t-field="line.name"/><br/>
                                         Volumen <span t-field="line.product_id.volume"/> M3<br/>
-                                        <t t-set="total_volume" t-value="total_volume+line.product_id.volume"/>
+                                        <t t-set="total_volume" t-value="total_volume+(line.product_id.volume*line.product_uom_qty)"/>
                                         Peso <span t-field="line.product_id.weight"/> Kg
-                                        <t t-set="total_weight" t-value="total_weight+line.product_id.weight"/>
+                                        <t t-set="total_weight" t-value="total_weight+(line.product_id.weight*line.product_uom_qty)"/>
                                     </td>
                                     <td style="margin:0px; padding: 1px;">
-                                      <span t-field="line.product_id.sale_delay"/> Día(s)
+                                      <span t-field="line.product_id.produce_delay"/> Día(s)
                                     </td>
                                     <td style="margin:0px; padding: 1px;" class="text-right ">
                                         <span t-esc="'%i'%(line.product_uom_qty)"/>
@@ -224,11 +224,11 @@
                             <table>
                               <tr>
                                 <td style="margin:0px; padding: 2px;">Total Volumen</td>
-                                <td style="margin:0px; padding: 2px;" class="text-right"><span t-esc="total_volume"/> M3</td>
+                                <td style="margin:0px; padding: 2px;" class="text-right"><span t-esc="'{0:,.2f}'.format(total_volume)"/> M3</td>
                               </tr>
                               <tr>
                                 <td style="margin:0px; padding: 2px;">Total Peso</td>
-                                <td style="margin:0px; padding: 2px;" class="text-right"><span t-esc="total_weight"/> Kg</td>
+                                <td style="margin:0px; padding: 2px;" class="text-right"><span t-esc="'{0:,.2f}'.format(total_weight)"/> Kg</td>
                               </tr>
                             </table>
                             <p t-if="doc.note">
