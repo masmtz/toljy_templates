@@ -159,7 +159,7 @@
                                             <div style="height:70px; width:70px; margin: 0px auto;" t-field="line.product_id.image_1920" t-options-widget="&quot;image&quot;"/>
                                     </td> 
                                     <td style="margin:0px; padding: 1px;">
-                                        <span t-field="line.product_id.unspsc_code_id.code"/>
+                                        <span t-field="line.product_id.sat_product_id.code"/>
                                     </td>
                                     <td style="margin:0px; padding: 1px;">
                                         <span t-field="line.name"/><br/>
