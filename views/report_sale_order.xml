@@ -39,7 +39,7 @@
                         <t t-if="env.context.get('proforma', False) or is_pro_forma">
                             <span>Pro-Forma : </span>
                         </t>
-                        <span t-field="doc.name"/>
+                        <span t-field="doc.name"/> - <span t-field="doc.opportunity_id.name"/>
                     </h3>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                         <strong t-if="doc.partner_shipping_id == doc.partner_invoice_id">Dirección de Facturación y Envío:</strong>
                         <strong t-if="doc.partner_shipping_id != doc.partner_invoice_id">Dirección de Facturación:</strong>
                     </div>
-                    <div class="col-4" t-field="doc.partner_invoice_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;, &quot;email&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                    <div class="col-4" t-field="doc.partner_invoice_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
                 
                     <t t-if="doc.partner_shipping_id != doc.partner_invoice_id">
                         <div class="col-2">
@@ -109,6 +109,10 @@
                     <div name="payment_term" t-if="doc.payment_term_id" class="col-6 mb-2">
                         <strong>Términos de Pago : </strong>
                         <span class="m-0" t-field="doc.payment_term_id"/>
+                    </div>
+                    <div t-if="doc.opportunity_id.x_contacto" class="col-3 mb-2">
+                        <strong>Contacto : </strong>
+                        <span t-field="doc.opportunity_id.x_contacto"/><br/>
                     </div>
                 </div>
                 <!-- Is there a discount on at least one line? -->
